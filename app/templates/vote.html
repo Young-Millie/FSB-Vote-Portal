@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ url_for( 'static', filename= 'imgs/favicon.ico') }}">
+    <title>Vote Caster</title>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/loading.css') }}"/>
+
+    <!-- Core stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/modal-loading.css') }}">
+
+    <!-- CSS3 animations -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/modal-loading-animate.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/baguetteBox.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/thumbnail-gallery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/toasty.css') }}">
+
+    <style>
+        .voter-thumb-box{
+            height:100px;
+            border:3px solid #eee;
+            display: flex;
+            justify-content: center; /* align horizontal */
+            align-items: center; /* align vertical */
+            margin-top:10px !important;
+        }
+
+        .cand-image{
+            width:270px !important;
+            height:200px !important;
+        }
+
+        .custom-thumb-cursor{
+            cursor: url({{ url_for('static',filename='imgs/thumb.png') }}), auto ! important;
+        }
+
+        .caption-mini{
+            height:50px;
+            margin:5px;
+        }
+
+        input{
+            height:100% !important;
+            background-color:#187fff;
+            border-color:#187fff;
+            color:#f9f9f9;
+        }
+
+        .showpost{
+            display:block !important;
+        }
+
+        .hidepost{
+            display:none !important;
+        }
+
+        // Prevent too much scroll on the page
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .round-button {
+            width: 35%;
+            line-height: 105px;
+            font-weight:bold;
+            height: auto;
+            padding: 5%;
+            border-radius: 50%;
+            border: 2px solid #f5f5f5;
+            overflow: hidden;
+            background: #464646;
+            box-shadow: 0 0 3px gray;
+
+            vertical-align: middle;
+            background-color: #187fff;
+            margin-top: 10%;
+            text-align:center;
+        }
+
+        .thanks-style {
+            width: 35%;
+            line-height: 105px;
+            font-weight:bold;
+            height: auto;
+            padding: 5%;
+            border: 2px solid #f5f5f5;
+            overflow: hidden;
+            background: #464646;
+            box-shadow: 0 0 3px gray;
+
+            vertical-align: middle;
+            background-color: #187fff;
+            margin-top: 10%;
+            text-align:center;
+        }
+
+        .ld-bounce{
+            animation-duration:2.0s ! important;
+        }
+
+        /* informational toast class: */
+        .toast--info {}
+
+        /* successful toast class: */
+        .toast--success {
+            <!--background:#2ECC71s;-->
+            <!--color:white;-->
+        }
+
+        /* warning toast class: */
+        .toast--warning {
+            <!--background:yellow;-->
+            <!--color:white;-->
+        }
+
+        /* error toast class: */
+        .toast--error {}
+
+        /* progress bar color for each toast type: */
+        .toast-progressbar--info {}
+        .toast-progressbar--success {
+
+        }
+        .toast-progressbar--warning {}
+        .toast-progressbar--error {}
+
+        /*//////////////////////////////////////////////////////////////////
+        [ Social item ]*/
+        .login100-social-item {
+          font-size: 25px;
+          color: #3b5998;
+
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background-color: #fff;
+          margin: 5px;
+          box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.1);
+          -moz-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.1);
+          -webkit-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.1);
+          -o-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.1);
+          -ms-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .login100-social-item img {
+          width: 26px;
+        }
+
+        .login100-social-item:hover {
+          cursor:pointer;
+          color: #a0a1a5;
+          box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.2);
+          -moz-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.2);
+          -webkit-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.2);
+          -o-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.2);
+          -ms-box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        .flex-c {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pager-active{
+            background:blue;
+            color:white;
+        }
+
+        .pager-inactive{
+            background:white;
+            color:blue;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container gallery-container">
+
+    <h1 id="post_title_id" class="text-capitalize"></h1>
+
+    <p class="page-description text-center">Welcome <span class="text-capitalize">{{ userdata['fName'] }}</span><span id="please_cast_id">, please cast your vote.</span></p>
+    <br>
+
+    <!--Page Shower-->
+    <div class="flex-c" id="pager-parent">
+
+    </div>
+
+    <div class="tz-gallery">
+        <div class="row" >
+            <div class="col-md-1" style="height:420px;">
+                <input type="button" onclick="processVotePrev()" value="Prev" align="center" class="btn">
+            </div>
+            <div class="col-md-10">
+
+                <!-- ###################### ALL POSITION PAGES ###################### -->
+                <div id="position_pages_id" class="row">
+
+                    <!--########################################################################-->
+                    {% set positionIds = [] %}
+                    {% set positionNames = [] %}
+
+                    {% set positionCands = {} %}
+
+
+                    {% for position in data['body'] %}
+                        <!--looping through the positions-->
+                        {% if loop.index == 1 %}
+                            {% set active_class = 'showpost' %}
+                        {% else %}
+                            {% set active_class = 'hidepost' %}
+                        {% endif %}
+
+                        {% do positionIds.append(position['p_post_id']) %}
+                        {% do positionNames.append(position['post_name']) %}
+
+
+                        <div class="{{ active_class }}" id="post{{ position['p_post_id'] }}">
+                            {% set all_cands = position['cands'] %}
+
+                            {% if (all_cands | count) == 1 %}
+                                {% set bootstrap_column = (candidate | count) %}
+                            {% elif (all_cands | count) == 2 %}
+                                {% set bootstrap_column = '6' %}
+                            {% elif (all_cands | count) == 3 %}
+                                {% set bootstrap_column = '4' %}
+                            {% elif (all_cands | count) == 4 %}
+                                {% set bootstrap_column = '3' %}
+                            {% else %}
+                                {% set bootstrap_column = (candidate | count) %}
+                            {% endif %}
+
+
+                            {% set candIds = [] %}
+
+                            {% for candidate in all_cands %}
+
+                                {% do candIds.append(candidate['cand_id']) %}
+
+                                <div class="col-sm-6 col-md-{{ bootstrap_column }}" onclick="setSelectCand('{{ position['p_post_id'] }}','{{ candidate['cand_id'] }}')" id="cand{{ candidate['cand_id'] }}">
+                                    <div class="thumbnail custom-thumb-cursor">
+                                        <a class="lightbox custom-thumb-cursor">
+                                            <img class="cand-image" src="{{ candidate['image'] }}" alt="cand_image">
+                                        </a>
+                                        <div class="caption">
+                                            <div class="caption-mini">
+                                                <h3>{{ candidate['name'] }}</h3>
+                                                <p><b>
+                                                    {% if candidate['teaser'] != None %}
+                                                        {{ candidate['teaser'] }}
+                                                    {%  endif %}
+                                                </b></p>
+                                            </div>
+
+                                            <p class="voter-thumb-box"> <img style="display:none;" id="candimg{{ candidate['cand_id'] }}" src="{{ url_for('static',filename='imgs/thumb.png') }}" alt="thumb-img"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% do positionCands.update({position['p_post_id']: candIds}) %}
+
+                      {% endfor %}
+
+                <!--########################################################################-->
+                </div>
+                <!-- ############### END OF ALL POSITION PAGES ###################### -->
+
+
+                <!-- ###################### ========= ###################### -->
+                <!-- ###################### ========= ###################### -->
+
+
+                <!-- ###################### CONFIRMATION PAGE ###################### -->
+                <div id="confirmation_page_id" class="row hidepost">
+
+                    <!--########################################################################-->
+
+                    <div id="modalConfirmDelete" role="dialog" aria-labelledby="exampleModalLabel">
+                      <div class="modal-dialog modal-sm modal-notify modal-danger" style="width:60%;" role="document">
+                        <!--Content-->
+                        <div class="modal-content text-center" style="height: 340px !important;">
+                          <!--Header-->
+                          <div class="modal-header d-flex justify-content-center">
+                            <p class="heading">Are you Done?</p>
+                          </div>
+
+                          <!--Body-->
+                          <div class="modal-body">
+
+                            <i class="fas fa-times fa-4x animated rotateIn"></i>
+
+                          </div>
+
+                          <!--Footer-->
+                          <div class="flex-center">
+                              <a type="button" id="confirm_vote_btn" onclick="submitVote();" class="btn btn-primary waves-effect ld ld-bounce round-button">CLICK TO SUBMIT</a>
+                              <span id="vote_thanks" style="display:none;" class="btn btn-primary waves-effect ld ld-bounce thanks-style">Thanks For Voting</span>
+                          </div>
+                        </div>
+                        <!--/.Content-->
+                      </div>
+                    </div>
+
+                    <!--########################################################################-->
+                </div>
+                <!-- ###################### END OF CONFIRMATION PAGE ###################### -->
+            </div>
+            <div class="col-md-1" style="height:420px;">
+                <input type="button" onclick="processVoteNext()" value="Next" align="center" class="btn">
+            </div>
+        </div>
+    </div>
+
+
+    <!--START OF TOAST-->
+
+    <!--END OF TOAST -->
+</div>
+
+<script src="{{ url_for( 'static', filename= 'js/jquery/2.1.3/jquery.min.js') }}"></script>
+<script src="{{ url_for( 'static', filename= 'js/baguetteBox.min.js') }}"></script>
+
+
+<script src="{{ url_for( 'static', filename= 'js/modal-loading.js') }}"></script>
+
+
+<script src="{{ url_for( 'static', filename= 'js/toasty.js') }}"></script>
+
+<script src="{{ url_for( 'static', filename= 'js/vote.js') }}"></script>
+
+<script>
+    baguetteBox.run('.tz-gallery');
+
+
+    $(document).ready(function(){
+        setPages({{ positionIds|tojson|safe }},{{ positionNames|tojson|safe }},{{ positionCands|tojson|safe }});
+
+        //Set pager shower
+        setNumberOfPagers(1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
+
+        setTimeout(function(){
+           window.location = "/logout";
+        },12000000 );
+        //User has Two minutes (120000) to Vote
+
+
+
+
+        //Make Toast
+        var successSoundUrl = "{{ url_for( 'static', filename= 'sounds/success/1.mp3') }}" ;
+        var errorSoundUrl = "{{ url_for( 'static', filename= 'sounds/error/1.mp3') }}" ;
+        var infoSoundUrl = "{{ url_for( 'static', filename= 'sounds/info/1.mp3') }}" ;
+        var warningSoundUrl = "{{ url_for( 'static', filename= 'sounds/warning/1.mp3') }}" ;
+        setToastSoundPaths(successSoundUrl,errorSoundUrl,infoSoundUrl,warningSoundUrl);
+
+        makeToast("info","You have 2 munites to vote!");
+    });
+
+
+</script>
+</body>
+</html>

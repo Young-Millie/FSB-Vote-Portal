@@ -1,0 +1,14 @@
+requests
+pymongo
+Flask
+flask_socketio
+flask_session
+flask_excel
+Jinja2
+mongokit
+passlib
+pyexcel_xls
+pygal
+Werkzeug
+unicodecsv
+
